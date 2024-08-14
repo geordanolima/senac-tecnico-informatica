@@ -82,7 +82,11 @@ class Cachorro:
 
     def latir(self):
         # metodo de ação
+        self.__abanar_rabo()
         print("Au au!")
+    
+    def __abanar_rabo(self):
+        print('rabo abanando')
 
 # instanciando a classe
 meu_cachorro = Cachorro("Rex", "Labrador")
@@ -100,11 +104,17 @@ except ZeroDivisionError:
     print("Não é possível dividir por zero.")
 
 
-
+# escrever um novo arquivo
 arquivo = open("meu_arquivo.txt", "w")
 arquivo.write("Olá, mundo!")
 arquivo.close()
 
+# adicionar novas informações em um arquivo
+arquivo = open("meu_arquivo.txt", "r")
+arquivo.write("nova linha")
+arquivo.close()
+
+# ler informações de um arquivo
 arquivo = open("meu_arquivo.txt", "r")
 conteudo = arquivo.read()
 print(conteudo)
