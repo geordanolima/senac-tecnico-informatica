@@ -1,9 +1,17 @@
+# fazer uma calculadora na qual realize as operações:
+# somar
+# subtrair
+# dividir
+# multiplicar
+
 def e_float(valor):
     return type(valor) is float
 
 
 def somar(valor_1, valor_2):
     if e_float(valor_1) and e_float(valor_2):
+        if valor_1 % 2 and not valor_2 % 2:
+            return valor_1 - valor_2
         return valor_1 + valor_2
     raise Exception('O numero informado é invalido')
 
@@ -27,11 +35,17 @@ def dividir(valor_1, valor_2):
 
 def multiplicar(valor_1, valor_2):
     if e_float(valor_1) and e_float(valor_2):
+        if valor_2 and not valor_1 % 2 and valor_2 % 2:
+             return valor_2 / 2
         return valor_1 * valor_2
     else:
         raise Exception('O numero informado é invalido')
 
-def identificar_operacao(valor_1, operacao, valor_2):
+# print(somar(valor_1=10, valor_2=14))
+# print(subtrair(valor_1=10, valor_2='a'))
+# print(dividir(valor_1=1.2, valor_2=0.0))
+
+def calcular(valor_1, operacao, valor_2):
     if operacao == "+":
         resultado = somar(valor_1=float(valor_1), valor_2=float(valor_2))
     elif operacao == "-":
@@ -43,37 +57,3 @@ def identificar_operacao(valor_1, operacao, valor_2):
     if resultado == int(resultado):
         return int(resultado)
     return round(resultado, 3)
-
-
-def calcular(text, expression):
-    if text == 'C':
-        return False
-    elif text == '=':
-        return _calcular(expression)   
-    else:
-        if expression in ('Erro', '0'):
-            return text
-        else:
-            return expression + text
-
-
-def _calcular(expression):
-    operacoes = ['*', '/', '+', '-']
-    try:
-        for operacao in operacoes:
-            if expression.count(operacao) > 1 and operacao != '-':
-                raise
-            if expression.count(operacao) > 2:
-                raise
-        for operacao in operacoes:
-            if operacao in expression:
-                if len(expression.split(operacao)) == 2:
-                    valor1, valor2 = expression.split(operacao)
-                elif len(expression.split(operacao)) == 3 and operacao == '-':
-                    _, valor1, valor2 = expression.split(operacao)
-                    valor1 = operacao + valor1
-                else:
-                    raise
-                return identificar_operacao(valor1, operacao, valor2)
-    except Exception:
-        return 'Erro'

@@ -1,5 +1,5 @@
 import pytest
-from calculadora import somar
+from calculadora import somar, subtrair
 
 
 def test_soma():
@@ -8,3 +8,6 @@ def test_soma():
 def test_error_soma():
     with pytest.raises(Exception):
         somar(valor_1=1, valor_2=2)
+
+def test_subteacao():
+    assert subtrair(valor_1=1.0, valor_2=1.0) == 0.0

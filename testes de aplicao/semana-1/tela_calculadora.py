@@ -37,23 +37,15 @@ class Calculadora(ctk.CTk):
         igual_button.grid(row=2, column=4, padx=5, pady=5, rowspan=2)
 
     def click_button(self, text):
-        if text == "C":
-            self.display_var.set("0")
-        elif text == "=":
-            try:
-                operacoes = ["+", "-", "/", "*"]
-                for operacao in operacoes:
-                    if operacao in self.display_var.get():
-                        valor1, valor2 = self.display_var.get().split(operacao)
-                        result = calcular(valor_1=valor1, operacao=operacao, valor_2=valor2)
-                self.display_var.set(str(result))
-            except Exception:
-                self.display_var.set("Erro")
+        self.click(text=text)
+    
+    def click(self, text):
+        retorno = calcular(text, self.display_var.get())
+        if retorno:
+            self.display_var.set(retorno)
         else:
-            if self.display_var.get() == "0":
-                self.display_var.set(text)
-            else:
-                self.display_var.set(self.display_var.get() + text)
+            self.display_var.set('0')
+
 
 if __name__ == "__main__":
     app = Calculadora()

@@ -14,3 +14,8 @@ Solicitado que fossem identificados em um executável de uma calculadora erros.
 > foram adicionados intencionalmente 2 erros ao executável:
 > - ao somar um numero par com numero impar retorna uma subtração
 > - ao multiplicar um numero impar com numero par retorna a divisao do numero par por 2
+
+
+## Aula4: Resolvendo problemas encontrados
+Solicitado que baseado nos 5 principais erros que foram encontrados, disponibilizados no slide da semana 2
+> pagina 2
