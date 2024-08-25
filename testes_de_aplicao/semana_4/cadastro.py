@@ -14,7 +14,7 @@ class Cadastro:
             "senha": senha
         }
         self._salvar(obj=dados)
-        return True, "Cadastrado com sucesso!"
+        return True, dados
     
     def _salvar(self, obj: dict):
         arquivo = open("dados.json", "a")
