@@ -13,7 +13,7 @@ def get_calcular(expressao):
     resultado = calcular(expression=expressao)
     if resultado == "Erro":
         return Response(
-            json.dumps({'Erro': 'Não foi possível calcular a expressão: {expressao}'}),
+            json.dumps({'Erro': f'Não foi possível calcular a expressão: {expressao}'}),
             status_code=status.HTTP_400_BAD_REQUEST,
             headers={'content-type': 'application/json'},
         )

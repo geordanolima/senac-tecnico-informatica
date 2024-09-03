@@ -1,4 +1,4 @@
-import json
+from cadastro import Pessoa
 import tkinter as tk
 from cadastro import Cadastro
 
@@ -41,13 +41,16 @@ class Application(tk.Tk):
         self.cpf.set("")
         self.senha.set("")
         self.confirma_senha.set("")
-
+        
     def confirmar(self):
-        sucesso, mensagem = self.cadastro.cadastrar(
+        pessoa = Pessoa(
             nome=self.nome.get(),
             email=self.email.get(),
             cpf=self.cpf.get(),
             senha=self.senha.get(),
+        )
+        sucesso, mensagem = self.cadastro.cadastrar(
+            pessoa=pessoa,            
             confirma_senha=self.confirma_senha.get(),
         )
         self.mensagem.config(text=mensagem)
