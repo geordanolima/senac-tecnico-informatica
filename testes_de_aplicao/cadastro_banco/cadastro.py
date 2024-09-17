@@ -116,7 +116,7 @@ class Cadastro:
             )
             if erro:
                 return erro
-            return self.buscar_cpf(cpf=pessoa.cpf).dict()
+            return f"cadastrado no id: {self.buscar_cpf(cpf=pessoa.cpf).id}"
         else:
             return "Erro ao salvar"
     
