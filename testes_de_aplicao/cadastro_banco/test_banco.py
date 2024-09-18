@@ -14,22 +14,17 @@ def banco():
 
 @pytest.fixture
 def limpar_banco(banco):
-    banco._conectar()
-    banco.cursor.execute(f'DELETE FROM {banco.tabela}')
-    banco.conn.commit()
-    banco.conn.close()
+    banco._executa_database(sql=f'DELETE FROM {banco.tabela}')
 
 
 def test_verifica_tabela_criada(banco):
-    banco._conectar()
-    banco.cursor.execute(
-        f"""
+    resultado = banco._busca_database(sql=f"""
             SELECT name FROM sqlite_master 
             WHERE type='table' AND name='{banco.tabela}'
-        """
+        """,
+        one=True
     )
-    assert banco.cursor.fetchone()[0] == banco.tabela
-    banco.conn.close()
+    assert resultado[0] == banco.tabela
 
 def test_insere_registro(banco, limpar_banco):
     nome = "teste"
