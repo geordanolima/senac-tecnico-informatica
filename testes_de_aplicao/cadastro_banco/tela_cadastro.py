@@ -62,6 +62,7 @@ class Application(tk.Tk):
         self.ecpf.config(state="normal")
         self.esenha.config(state="normal")
         self.econfirmasenha.config(state="normal")
+        self.mensagem.config(text="")
     
     def buscar(self):
         resultado = self.cadastro.buscar(id=self.id.get())
@@ -77,26 +78,35 @@ class Application(tk.Tk):
         self.confirma_senha.set(resultado.senha)
 
         self.eid.config(state="readonly")
-        self.enome.config(state="readonly")
+        self.enome.config(state="normal")
         self.eemail.config(state="readonly")
         self.ecpf.config(state="readonly")
-        self.esenha.config(state="readonly")
-        self.econfirmasenha.config(state="readonly")
+        self.esenha.config(state="normal")
+        self.econfirmasenha.config(state="normal")
     
     def confirmar(self):
-        pessoa = Pessoa(
-            nome=self.nome.get(),
-            email=self.email.get(),
-            cpf=self.cpf.get(),
-            senha=self.senha.get(),
-        )
-        sucesso, mensagem = self.cadastro.cadastrar(
-            pessoa=pessoa,            
-            confirma_senha=self.confirma_senha.get(),
-        )
-        self.mensagem.config(text=mensagem)
-        if sucesso:
-            self.limpar_campos()
+        if self.eid["state"] == "normal":
+            pessoa = Pessoa(
+                nome=self.nome.get(),
+                email=self.email.get(),
+                cpf=self.cpf.get(),
+                senha=self.senha.get(),
+            )
+            sucesso, mensagem = self.cadastro.cadastrar(
+                pessoa=pessoa,            
+                confirma_senha=self.confirma_senha.get(),
+            )
+            self.mensagem.config(text=mensagem)
+            if sucesso:
+                self.limpar_campos()
+        else:
+            id = self.id.get()
+            nome = self.nome.get()
+            senha = self.senha.get()
+            sucesso, mensagem = self.cadastro.atualizar_cadastro(id=id, nome=nome, senha=senha)
+            self.mensagem.config(text=mensagem)
+            if sucesso:
+                self.limpar_campos()
 
     def backup(self):
         retorno = self.cadastro.backup()

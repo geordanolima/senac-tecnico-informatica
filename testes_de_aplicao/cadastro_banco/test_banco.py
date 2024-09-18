@@ -4,7 +4,13 @@ from sqlite_banco import Banco
 
 @pytest.fixture
 def banco():
-    return Banco(nome_banco='teste.db')
+    import os
+
+    DB_NAME_TEST = 'teste.db'
+    banco = Banco(nome_banco=DB_NAME_TEST)
+    yield banco
+    os.remove(DB_NAME_TEST)
+    return banco
 
 @pytest.fixture
 def limpar_banco(banco):

@@ -32,7 +32,19 @@ class Cadastro:
         if erro:
             return False, erro
         return True, pessoa.dict()
-    
+
+    def atualizar_cadastro(self, id, nome, senha):
+        _nome = self._valida_nome(nome=nome)
+        if _nome:
+            return False, _nome
+        _senha = self._valida_senha(senha=senha)
+        if _senha:
+            return False, _senha
+        mensagem = self.banco.atualizar_registro(id=id, nome=nome, senha=senha)
+        if mensagem:
+            return False, mensagem
+        return True, "Atualizado com sucesso!"
+
     def validacao(self, pessoa: Pessoa, confirma_senha: str):
         if not (pessoa.nome and pessoa.email and pessoa.cpf and pessoa.senha):
             return "Preencha todos os campos"

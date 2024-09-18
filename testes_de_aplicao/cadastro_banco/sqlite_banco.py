@@ -7,16 +7,39 @@ class Banco:
         self.tabela = 'usuario'
         self.cria_banco()
 
-    def _conectar(self):
-        self.conn = sqlite3.connect(self.nome_banco)
-        self.cursor = self.conn.cursor()
+    def _executa_database(self, sql):
+        print(sql)
+        try:
+            self.conn = sqlite3.connect(self.nome_banco)
+            self.cursor = self.conn.cursor()
+            self.cursor.execute(sql)
+            self.conn.commit()
+            self.conn.close()
+        except Exception as erro:
+            self.conn.close()
+            return erro.args
+
+    def _busca_database(self, sql, one: bool = False):
+        print(sql)
+        try:
+            self.conn = sqlite3.connect(self.nome_banco)
+            self.cursor = self.conn.cursor()
+            self.cursor.execute(sql)
+            if one:
+                resultado = self.cursor.fetchone()
+            else:
+                resultado = self.cursor.fetchall()
+            self.conn.close()
+            return resultado
+        except Exception as erro:
+            self.conn.close()
+            return erro.args
 
     def cria_banco(self):
-        self._conectar()
-        self.cursor.execute(f"SELECT name FROM sqlite_master WHERE type='table' AND name='{self.tabela}'")
-        if self.cursor.fetchone() is None:
+        tabela_existente = self._busca_database(sql=f"SELECT name FROM sqlite_master WHERE type='table' AND name='{self.tabela}'")
+        if not tabela_existente:
             # Criando a tabela 'usuarios'
-            self.cursor.execute(f'''
+            self._executa_database(sql=f'''
                 CREATE TABLE {self.tabela} (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     nome TEXT NOT NULL,
@@ -25,40 +48,32 @@ class Banco:
                     senha TEXT NOT NULL
                 )
             ''')
-            self.conn.commit()
-        self.conn.close()
 
     def inserir_registro(self, nome, email, cpf, senha):
-        try:
-            self._conectar()
-            # Inserindo um novo usuário
-            sql = f'''INSERT INTO {self.tabela} (nome, email, cpf, senha) VALUES  ('{nome}', '{email}', '{cpf}', '{senha}')'''
-            sql = sql.format(nome=nome, email=email, cpf=cpf, senha=senha)
-            print(sql)
-            self.cursor.execute(sql)
-            self.conn.commit()
-            self.conn.close()
-        except Exception as erro:
-            self.conn.close()
-            return erro.args
+        return self._executa_database(
+            sql=f'''
+            INSERT INTO {self.tabela} (nome, email, cpf, senha) VALUES ('{nome}', '{email}', '{cpf}', '{senha}')
+            '''.format(nome=nome, email=email, cpf=cpf, senha=senha)
+        )
+
+    def atualizar_registro(self, id, nome, senha):
+        return self._executa_database(
+            sql=f"UPDATE {self.tabela} SET nome='{nome}', senha='{senha}' WHERE id={id}"
+        )
 
     def buscar_cadastro(self, id):
-        self._conectar()
-        self.cursor.execute('SELECT * FROM {tabela} where id = {id}'.format(tabela=self.tabela, id=id))
-        results = self.cursor.fetchone()
-        self.conn.close()
-        return results
+        return self._busca_database(
+            sql='SELECT * FROM {tabela} where id = {id}'.format(tabela=self.tabela, id=id),
+            one=True
+        )
 
     def buscar_cadastro_cpf(self, cpf):
-        self._conectar()
-        self.cursor.execute("SELECT * FROM {tabela} where cpf = '{cpf}'".format(tabela=self.tabela, cpf=cpf))
-        results = self.cursor.fetchone()
-        self.conn.close()
-        return results
+        return self._busca_database(
+            sql="SELECT * FROM {tabela} where cpf = '{cpf}'".format(tabela=self.tabela, cpf=cpf),
+            one=True
+        )
 
     def buscar_todos_os_cadastros(self):
-        self._conectar()
-        self.cursor.execute(f'SELECT * FROM {self.tabela}')
-        results = self.cursor.fetchall()
-        self.conn.close()
-        return results
+        return self._busca_database(
+            sql=f'SELECT * FROM {self.tabela}'
+        )
