@@ -1,5 +1,5 @@
 import pytest
-from .sqlite_banco import Banco
+from sqlite_banco import Banco
 
 
 @pytest.fixture
@@ -32,13 +32,14 @@ def test_verifica_tabela_criada(banco):
 
 def test_insere_registro(banco, limpar_banco):
     nome = "teste"
+    email = "email@email.com"
     cpf = "cpf"
-    erro = banco.inserir_registro(
-        nome=nome, email="teste", cpf=cpf, senha="teste"
-    )
+    senha = "senha"
+    erro = banco.inserir_registro(nome=nome, email=email, cpf=cpf, senha=senha)
     assert not erro
 
 
+# testes de componente
 def test_busca_registro_inserido(banco, limpar_banco):
     nome = "joao da silva"
     email = "email@email.com"
@@ -48,12 +49,33 @@ def test_busca_registro_inserido(banco, limpar_banco):
         nome=nome, email=email, cpf=cpf, senha=senha
     )
     assert not erro
+    # busca por cpf
     cadastro = banco.buscar_cadastro_cpf(cpf=cpf)
+    # busca por identificador
     cadastro_id = banco.buscar_cadastro(id=cadastro[0])
-    assert cadastro_id[1] == cadastro[1] == nome
-    assert cadastro_id[2] == cadastro[2] == email
-    assert cadastro_id[3] == cadastro[3] == cpf
-    assert cadastro_id[4] == cadastro[4] == senha
+    # busca por email
+    cadastro_email = banco.buscar_cadastro_email(email=email)
+    assert cadastro_id[1] == cadastro_email[1] == cadastro[1] == nome
+    assert cadastro_id[2] == cadastro_email[2] == cadastro[2] == email
+    assert cadastro_id[3] == cadastro_email[3] == cadastro[3] == cpf
+    assert cadastro_id[4] == cadastro_email[4] == cadastro[4] == senha
+
+def test_busca_login(banco, limpar_banco):
+    nome = "joao da silva"
+    email = "email@email.com"
+    cpf = "12312312345"
+    senha = "senha"
+    erro = banco.inserir_registro(
+        nome=nome, email=email, cpf=cpf, senha=senha
+    )
+    assert not erro
+    # busca por email e senha
+    cadastro = banco.buscar_login(email=email, senha=senha)
+    assert cadastro[1] == nome
+    assert cadastro[2] == email
+    assert cadastro[3] == cpf
+    assert cadastro[4] == senha
+
 
 def test_busca_todos_dados(banco, limpar_banco):
     cadastros = []

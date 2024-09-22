@@ -77,3 +77,15 @@ class Banco:
         return self._busca_database(
             sql=f'SELECT * FROM {self.tabela}'
         )
+
+    def buscar_cadastro_email(self, email):
+        return self._busca_database(
+            sql=f"SELECT * FROM {self.tabela} WHERE email='{email}'",
+            one=True
+        )
+
+    def buscar_login(self, email, senha):
+        return self._busca_database(
+            sql=f"SELECT * FROM {self.tabela} WHERE email='{email}' and senha = '{senha}'",
+            one=True
+        )

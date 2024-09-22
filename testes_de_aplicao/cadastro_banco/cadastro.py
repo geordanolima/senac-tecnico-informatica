@@ -1,5 +1,5 @@
 import json
-from .sqlite_banco import Banco
+from sqlite_banco import Banco
 
 
 class Pessoa():
@@ -157,4 +157,10 @@ class Cadastro:
         with open('backup.json', 'a') as arquivo:
             json.dump(dados_backup, arquivo, indent=4)
         return 'backup realizado com sucesso'
-            
+
+    def login(self, email, senha):
+        usuario = self.banco.buscar_login(email=email, senha=senha)
+        if usuario:
+            return "login realizado com sucesso"
+        return "erro ao realizar login"
+        

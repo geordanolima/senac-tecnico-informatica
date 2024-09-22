@@ -1,6 +1,6 @@
 import tkinter as tk
-from .cadastro import Cadastro, Pessoa
-from .sqlite_banco import Banco
+from cadastro import Cadastro, Pessoa
+from sqlite_banco import Banco
 
 
 class Application(tk.Tk):
@@ -8,10 +8,14 @@ class Application(tk.Tk):
         super().__init__()
         self.cadastro = Cadastro(banco=Banco())
         self.title("Cadastro")
-        self.geometry("300x400")
+        self.geometry("300x530")
 
         # Variáveis para armazenar os valores dos campos
+        self.email_login = tk.StringVar()
+        self.senha_login = tk.StringVar()
+        
         self.id = tk.StringVar()
+        
         self.nome = tk.StringVar()
         self.email = tk.StringVar()
         self.cpf = tk.StringVar()
@@ -19,7 +23,14 @@ class Application(tk.Tk):
         self.confirma_senha = tk.StringVar()
         self.busca = False
 
-        # Labels e entradas
+        tk.Label(self, text="Email:", width="200", anchor="w").pack(padx=10)
+        self.eemail_login = tk.Entry(self, textvariable=self.email_login)
+        self.eemail_login.pack(fill=tk.X, expand=True, padx=10)
+        tk.Label(self, text="Senha:", width="200", anchor="w").pack(padx=10)
+        self.esenha_login = tk.Entry(self, textvariable=self.senha_login, show="*")
+        self.esenha_login.pack(fill=tk.X, expand=True, padx=10)
+        tk.Button(self, text="Login", command=self.logar).pack(fill=tk.X, expand=True, padx=10, pady=10)
+
         tk.Label(self, text="Id:", width="200", anchor="w").pack(padx=10, pady=10)
         self.eid = tk.Entry(self, textvariable=self.id)
         self.eid.pack(fill=tk.X, expand=True, padx=10)
@@ -56,14 +67,27 @@ class Application(tk.Tk):
         self.cpf.set("")
         self.senha.set("")
         self.confirma_senha.set("")
+        self.email_login.set("")
+        self.senha_login.set("")
         self.eid.config(state="normal")
         self.enome.config(state="normal")
         self.eemail.config(state="normal")
         self.ecpf.config(state="normal")
         self.esenha.config(state="normal")
         self.econfirmasenha.config(state="normal")
+        self.eemail_login.config(state="normal")
+        self.esenha_login.config(state="normal")
         self.mensagem.config(text="")
-    
+
+    def logar(self):
+        mensagem = self.cadastro.login(
+            email=self.email_login.get(),
+            senha=self.senha_login.get()
+        )
+        if type(mensagem) == str:
+            self.mensagem.config(text=mensagem)
+            return
+
     def buscar(self):
         resultado = self.cadastro.buscar(id=self.id.get())
         if type(resultado) == str:
@@ -83,6 +107,8 @@ class Application(tk.Tk):
         self.ecpf.config(state="readonly")
         self.esenha.config(state="normal")
         self.econfirmasenha.config(state="normal")
+        self.eemail_login.config(state="readonly")
+        self.esenha_login.config(state="readonly")
     
     def confirmar(self):
         if self.eid["state"] == "normal":

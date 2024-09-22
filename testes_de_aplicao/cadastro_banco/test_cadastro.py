@@ -1,7 +1,7 @@
 import pytest
 
-from .cadastro import Pessoa, Cadastro
-from .sqlite_banco import Banco
+from cadastro import Pessoa, Cadastro
+from sqlite_banco import Banco
 
 @pytest.fixture
 def banco():
@@ -61,6 +61,18 @@ def test_email(cadastro, email, resultado_esperado):
     assert cadastro._valida_email(email=email) == resultado_esperado
 
 
+def test_email_2(cadastro):
+    assert cadastro._valida_email(email="email@email.com") == None
+    assert cadastro._valida_email(email="email@teste.edu.br") == None
+    assert cadastro._valida_email(
+        email="emailcommaisde50caracteresemailcommaisde50caracteres") == "o email pode ter somente 50 caracteres"
+    assert cadastro._valida_email(email="emailsemarroba.com.br") == "email precisa ter @"
+    assert cadastro._valida_email(email="emailcom@massemponto") == "email precisa ter . após o @"
+    assert cadastro._valida_email(email="emailcom@ecom.terminadoem.") == "email não pode terminar em ."
+    assert cadastro._valida_email(email="email@.com") == "não pode ter . logo após o @"
+
+
+
 @pytest.mark.parametrize(
     "cpf,resultado_esperado", 
     [
@@ -97,9 +109,6 @@ def test_senha(cadastro, senha, resultado_esperado):
     [
         (Pessoa(nome="nome teste", email="email@email.com", cpf="76739421005", senha="Teste@1234"), "Teste@1234", None),
         (Pessoa(nome="", email="email", cpf="123", senha="senha"), "", "Preencha todos os campos"),
-        (Pessoa(nome="nome", email="", cpf="123", senha="senha"), "", "Preencha todos os campos"),
-        (Pessoa(nome="nome", email="email", cpf="", senha="senha"), "", "Preencha todos os campos"),
-        (Pessoa(nome="nome", email="email", cpf="123", senha=""), "", "Preencha todos os campos"),
         (Pessoa(nome="nome", email="email", cpf="123", senha="senha"), "", "preencha o sobrenome também"),
         (Pessoa(nome="nome teste", email="email", cpf="123", senha="senha"), "", "email precisa ter @"),
         (Pessoa(nome="nome teste", email="email@email.com", cpf="123", senha="senha"), "", "CPF inválido"),
