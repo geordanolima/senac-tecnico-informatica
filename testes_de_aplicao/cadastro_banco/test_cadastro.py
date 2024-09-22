@@ -1,12 +1,29 @@
 import pytest
 
-from testes_de_aplicao.cadastro_banco.sqlite_banco import Banco
-from cadastro import Pessoa, Cadastro
+from .cadastro import Pessoa, Cadastro
+from .sqlite_banco import Banco
+
+@pytest.fixture
+def banco():
+    import os
+
+    DB_NAME_TEST = 'teste.db'
+    banco = Banco(nome_banco=DB_NAME_TEST)
+    # comando yeld vai ter o papel do return, mas vai esperar terminar o processo que utiliza a variavel banco
+    yield banco
+    # assim que terminar de usar o banco, vai executar a proxima linha para remover arquivo do banco sqlite
+    os.remove(DB_NAME_TEST)
 
 
 @pytest.fixture
-def cadastro() -> Cadastro:
-    return Cadastro(banco=Banco('test.db'))
+def cadastro(banco) -> Cadastro:
+    return Cadastro(banco=banco)
+
+
+@pytest.fixture
+def insere_cadastro(cadastro):
+    pessoa = Pessoa(nome="nome teste", email="email@teste.com", cpf="123454678901", senha="Teste!23")
+    cadastro.cadastrar(pessoa=pessoa, confirma_senha="Teste!23")
 
 
 # testes de unidade
@@ -103,32 +120,63 @@ def test_validacao(cadastro, pessoa, conf_senha, resultado_esperado):
     assert cadastro.validacao(pessoa=pessoa, confirma_senha=conf_senha) == resultado_esperado
 
 
-# @pytest.mark.parametrize(
-#     "pessoa,conf_senha,resultado_esperado",
-#     [
-#         (
-#             Pessoa(nome="nome teste", email="email@email.com", cpf="76739421005", senha="Teste@1234"),
-#             "Teste@1234",
-#             (True, {"nome":"nome teste", "email":"email@email.com", "cpf":"76739421005", "senha":"Teste@1234"})
-#         ),
-#         (Pessoa(nome="", email="email", cpf="123", senha="senha"), "", (False, "Preencha todos os campos")),
-#         (Pessoa(nome="nome", email="", cpf="123", senha="senha"), "", (False, "Preencha todos os campos")),
-#         (Pessoa(nome="nome", email="email", cpf="", senha="senha"), "", (False, "Preencha todos os campos")),
-#         (Pessoa(nome="nome", email="email", cpf="123", senha=""), "", (False, "Preencha todos os campos")),
-#         (Pessoa(nome="nome", email="email", cpf="123", senha="senha"), "", (False, "preencha o sobrenome também")),
-#         (Pessoa(nome="nome teste", email="email", cpf="123", senha="senha"), "", (False, "email precisa ter @")),
-#         (Pessoa(nome="nome teste", email="email@email.com", cpf="123", senha="senha"), "", (False, "CPF inválido")),
-#         (
-#             Pessoa(nome="nome teste", email="email@email.com", cpf="76739421005", senha="Teste"),
-#             "",
-#             (False, "é necessário possuir caracter especial")
-#         ),
-#         (
-#             Pessoa(nome="nome teste", email="email@email.com", cpf="76739421005", senha="Teste@1234"),
-#             "",
-#             (False, "As senhas não coincidem!")
-#         ),
-#     ]
-# )
-# def test_cadastro(mocker, cadastro, pessoa, conf_senha, resultado_esperado):
-#     assert cadastro.cadastrar(pessoa=pessoa, confirma_senha=conf_senha) == resultado_esperado
+# testes de integração
+@pytest.mark.parametrize(
+    "pessoa,conf_senha,resultado_esperado",
+    [
+        (
+            Pessoa(nome="nome teste", email="email@email.com", cpf="76739421005", senha="Teste@1234"),
+            "Teste@1234",
+            (True, 'cadastrado no id: 1')
+        ),
+        (Pessoa(nome="", email="email", cpf="123", senha="senha"), "", (False, "Preencha todos os campos")),
+        (Pessoa(nome="nome", email="email", cpf="123", senha="senha"), "", (False, "preencha o sobrenome também")),
+        (Pessoa(nome="nome teste", email="email", cpf="123", senha="senha"), "", (False, "email precisa ter @")),
+        (Pessoa(nome="nome teste", email="email@email.com", cpf="123", senha="senha"), "", (False, "CPF inválido")),
+        (
+            Pessoa(nome="nome teste", email="email@email.com", cpf="76739421005", senha="Teste"),
+            "",
+            (False, "é necessário possuir caracter especial")
+        ),
+        (
+            Pessoa(nome="nome teste", email="email@email.com", cpf="76739421005", senha="Teste@1234"),
+            "",
+            (False, "As senhas não coincidem!")
+        ),
+    ]
+)
+def test_cadastrar(cadastro, pessoa, conf_senha, resultado_esperado):
+    assert cadastro.cadastrar(pessoa=pessoa, confirma_senha=conf_senha) == resultado_esperado
+    if resultado_esperado[0]:
+        usuario_cadastrado = cadastro.buscar_cpf(cpf=pessoa.cpf)
+        assert usuario_cadastrado.nome == pessoa.nome
+        assert usuario_cadastrado.email == pessoa.email
+        assert usuario_cadastrado.cpf == pessoa.cpf
+        assert usuario_cadastrado.senha == pessoa.senha
+
+
+@pytest.mark.parametrize(
+    "pessoa_alt,resultado_esperado",
+    [
+        (
+            Pessoa(id=1, nome="novo nome", email="", cpf="", senha="Teste!23"),
+            (True, "Atualizado com sucesso!"),
+        ),
+        (
+            Pessoa(id=1, nome="novo nome", email="", cpf="", senha="NovaSenha!23"),
+            (True, "Atualizado com sucesso!"),
+        ),
+        (
+            Pessoa(id=1, nome="nome_errado", email="", cpf="", senha="Teste!23"),
+            (False, "preencha o sobrenome também"),
+        ),
+        (
+            Pessoa(id=1, nome="novo nome", email="", cpf="", senha="senhasemnumeros"),
+            (False, "é necessário possuir caracter especial"),
+        ),
+    ]
+)
+def test_alterar_cadastro(cadastro, insere_cadastro, pessoa_alt, resultado_esperado):
+    resultado = cadastro.atualizar_cadastro(id=pessoa_alt.id, nome=pessoa_alt.nome, senha=pessoa_alt.senha)
+    assert resultado == resultado_esperado
+    

@@ -1,6 +1,6 @@
 import tkinter as tk
-from cadastro import Cadastro, Pessoa
-from sqlite_banco import Banco
+from .cadastro import Cadastro, Pessoa
+from .sqlite_banco import Banco
 
 
 class Application(tk.Tk):

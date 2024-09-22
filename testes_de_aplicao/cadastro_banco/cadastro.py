@@ -1,5 +1,5 @@
 import json
-from sqlite_banco import Banco
+from .sqlite_banco import Banco
 
 
 class Pessoa():
@@ -28,10 +28,11 @@ class Cadastro:
         dados_invalidados = self.validacao(pessoa, confirma_senha)
         if dados_invalidados:
             return False, dados_invalidados
-        erro = self._salvar(pessoa=pessoa)
-        if erro:
+        try:
+            resultado = self._salvar(pessoa=pessoa)
+            return True, resultado
+        except Exception as erro:
             return False, erro
-        return True, pessoa.dict()
 
     def atualizar_cadastro(self, id, nome, senha):
         _nome = self._valida_nome(nome=nome)
@@ -127,7 +128,7 @@ class Cadastro:
                 senha=pessoa.senha,
             )
             if erro:
-                return erro
+                raise erro
             return f"cadastrado no id: {self.buscar_cpf(cpf=pessoa.cpf).id}"
         else:
             return "Erro ao salvar"
