@@ -41,9 +41,9 @@ def test_insere_registro(banco, limpar_banco):
 
 # testes de componente
 def test_busca_registro_inserido(banco, limpar_banco):
-    nome = "joao da silva"
-    email = "email@email.com"
-    cpf = "12312312345"
+    nome = "nome"
+    email = "email"
+    cpf = "cpf"
     senha = "senha"
     erro = banco.inserir_registro(
         nome=nome, email=email, cpf=cpf, senha=senha
@@ -104,7 +104,8 @@ def test_banco_atualiza_cadastro(banco, limpar_banco):
     cadastro = banco.buscar_cadastro_cpf(cpf=cpf)
     assert cadastro[1] == nome
     assert cadastro[4] == senha
-    erro = banco.atualizar_registro(id=cadastro[0], nome=nome_alterado, senha=senha_alterada)
+    erro = banco.atualizar_registro(
+        id=cadastro[0], nome=nome_alterado, senha=senha_alterada)
     cadastro_alterado = banco.buscar_cadastro_cpf(cpf=cpf)
     assert cadastro_alterado[1] == nome_alterado
     assert cadastro_alterado[4] == senha_alterada

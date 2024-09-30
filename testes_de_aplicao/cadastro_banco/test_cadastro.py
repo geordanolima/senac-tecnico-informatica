@@ -22,7 +22,7 @@ def cadastro(banco) -> Cadastro:
 
 @pytest.fixture
 def insere_cadastro(cadastro):
-    pessoa = Pessoa(nome="nome teste", email="email@teste.com", cpf="123454678901", senha="Teste!23")
+    pessoa = Pessoa(nome="nome teste", email="email@teste.com", cpf="12345467890", senha="Teste!23")
     cadastro.cadastrar(pessoa=pessoa, confirma_senha="Teste!23")
 
 
@@ -172,7 +172,7 @@ def test_cadastrar(cadastro, pessoa, conf_senha, resultado_esperado):
             (True, "Atualizado com sucesso!"),
         ),
         (
-            Pessoa(id=1, nome="novo nome", email="", cpf="", senha="NovaSenha!23"),
+            Pessoa(id=1, nome="novo nome e senha", email="", cpf="", senha="NovaSenha!23"),
             (True, "Atualizado com sucesso!"),
         ),
         (
@@ -188,4 +188,8 @@ def test_cadastrar(cadastro, pessoa, conf_senha, resultado_esperado):
 def test_alterar_cadastro(cadastro, insere_cadastro, pessoa_alt, resultado_esperado):
     resultado = cadastro.atualizar_cadastro(id=pessoa_alt.id, nome=pessoa_alt.nome, senha=pessoa_alt.senha)
     assert resultado == resultado_esperado
+    if resultado_esperado[0]:
+        pessoa = cadastro.buscar(id=pessoa_alt.id)
+        assert pessoa.nome == pessoa_alt.nome
+        assert pessoa.senha == pessoa_alt.senha
     

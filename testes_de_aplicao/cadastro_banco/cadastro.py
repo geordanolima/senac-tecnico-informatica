@@ -159,6 +159,13 @@ class Cadastro:
         return 'backup realizado com sucesso'
 
     def login(self, email, senha):
+        usuario = self.banco.buscar_cadastro_email(email=email)
+        if usuario:
+            if usuario[4] == senha:
+                return "login realizado com sucesso"    
+        return "erro ao realizar login"
+    
+    def login_antigo(self, email, senha):
         usuario = self.banco.buscar_login(email=email, senha=senha)
         if usuario:
             return "login realizado com sucesso"

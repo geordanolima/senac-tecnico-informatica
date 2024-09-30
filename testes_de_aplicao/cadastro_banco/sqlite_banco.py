@@ -8,7 +8,7 @@ class Banco:
         self.cria_banco()
 
     def _executa_database(self, sql):
-        print(sql)
+        # print(sql)
         try:
             self.conn = sqlite3.connect(self.nome_banco)
             self.cursor = self.conn.cursor()
@@ -20,7 +20,7 @@ class Banco:
             return erro.args
 
     def _busca_database(self, sql, one: bool = False):
-        print(sql)
+        # print(sql)
         try:
             self.conn = sqlite3.connect(self.nome_banco)
             self.cursor = self.conn.cursor()

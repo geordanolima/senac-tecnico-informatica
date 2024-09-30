@@ -1,14 +1,15 @@
 nota = 75
 
-# condicional if
-if nota >= 70:
-    print("Aprovado!")
-# condicional elif
-elif nota >= 60:
-    print("Recuperação!")
-# condicional else
-else:
-    print("Reprovado!")
+def verifica_aprovacao_aluno(nota):
+    # condicional if
+    if nota >= 70:
+        return "Aprovado!"
+    # condicional elif
+    elif nota >= 60:
+        return "Recuperação!"
+    # condicional else
+    else:
+        return "Reprovado!"
 
 
 # Loop for
